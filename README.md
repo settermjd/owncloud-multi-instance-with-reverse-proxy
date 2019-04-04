@@ -7,7 +7,7 @@
 This is a multi-instance setup of ownCloud where both instances sit behind [a reverse proxy][link-reverse-proxy-explanation].
 The intent of the project is to make is easier to test functionality of ownCloud that requires interaction between multiple instances, as well as a, potential, template for building multi-instance setups (_that's a latter thought that is perhaps a coincidental benefit, rather than a stated aim_).
 
-## Building the Containers
+## Building the Containers
 
 When initially checked out, the project will not build if you run `docker-compose up`, as the following files are missing:
 
