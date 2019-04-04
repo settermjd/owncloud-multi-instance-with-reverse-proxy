@@ -1,0 +1,14 @@
+FROM php:7.1-apache
+Maintainer Matthew Setter <matthew@matthewsetter.com>
+
+RUN a2enmod \
+  ssl \
+  deflate \
+  headers \
+  proxy \
+  proxy_balancer \
+  proxy_connect \
+  proxy_html \
+  proxy_http \
+  rewrite 
+

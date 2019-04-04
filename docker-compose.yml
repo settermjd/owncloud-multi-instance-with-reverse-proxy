@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+  proxy:
+    image: owncloud-reverse-proxy-server
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/files/httpd/reverse_proxy/000-default.conf:/etc/apache2/sites-enabled/000-default.conf:z
+      - ./docker/files/etc/ssl/certs/server-1.crt:/etc/ssl/certs/server-1.crt:z
+      - ./docker/files/etc/ssl/private/server-1.key:/etc/ssl/private/server-1.key:z
+      - ./docker/files/etc/ssl/certs/server-2.crt:/etc/ssl/certs/server-2.crt:z
+      - ./docker/files/etc/ssl/private/server-2.key:/etc/ssl/private/server-2.key:z
+      - ./docker/files/etc/ssl/chains/chain.crt:/etc/ssl/chain/owncloud-ca-chainfile.crt
+  webserver-1:
+    image: owncloud-server
+    restart: always
+    volumes:
+      - ./owncloud/community/owncloud-server-1:/var/www/html:z
+      - ./docker/files/server-1-000-default.conf:/etc/apache2/sites-enabled/000-default.conf:z
+      - ./docker/files/etc/ssl/certs/server-1.crt:/etc/ssl/certs/owncloud-selfsigned.crt:z
+      - ./docker/files/etc/ssl/private/server-1.key:/etc/ssl/private/owncloud-selfsigned.key:z
+      - ./docker/files/etc/ssl/chains/chain.crt:/etc/ssl/chain/owncloud-ca-chainfile.crt
+    ports:
+      - "8090:80"
+      - "4434:443"
+  webserver-2:
+    image: owncloud-server
+    restart: always
+    volumes:
+      - ./owncloud/community/owncloud-server-2:/var/www/html:z
+      - ./docker/files/server-2-000-default.conf:/etc/apache2/sites-enabled/000-default.conf:z
+      - ./docker/files/etc/ssl/certs/server-2.crt:/etc/ssl/certs/owncloud-selfsigned.crt:z
+      - ./docker/files/etc/ssl/private/server-2.key:/etc/ssl/private/owncloud-selfsigned.key:z
+      - ./docker/files/etc/ssl/chains/chain.crt:/etc/ssl/chain/owncloud-ca-chainfile.crt
+    ports:
+      - "8070:80"
+      - "4435:443"
+  database-1:
+    image: mariadb
+    restart: always
+    volumes:
+      - type=volume
+        source=mysql-1
+        target=/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: owncloud
+      MYSQL_PASSWORD: owncloud
+      MYSQL_DATABASE: owncloud
+    ports:
+      - "33066:3306"
+  database-2:
+    image: mariadb
+    restart: always
+    volumes:
+      - type=volume
+        source=mysql-2
+        target=/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: owncloud
+      MYSQL_PASSWORD: owncloud
+      MYSQL_DATABASE: owncloud
+    ports:
+      - "33067:3306"
+
+volumes:
+    mysql-1:
+    mysql-2:
